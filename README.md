@@ -1,2 +1,2 @@
 # DC_Bot_01_Group
-for jaja group
+# Bot token must be stored in .env

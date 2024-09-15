@@ -3,6 +3,8 @@ use poise::serenity_prelude as serenity_pre;
 use serenity_pre::async_trait;
 use serenity_pre::model::channel::Message;
 use serenity_pre::prelude::*;
+use serenity::builder::{CreateForumPost, CreateMessage};
+use serenity::model::id::ChannelId;
 
 struct Handler;
 
@@ -20,6 +22,11 @@ async fn age(
     let u = user.as_ref().unwrap_or_else(|| ctx.author());
     let response = format!("{}'s account was created at {}", u.name, u.created_at());
     ctx.say(response).await?;
+    let channel_id = std::env::var("CHANNEL_ID").expect("missing CHANNEL_ID").parse::<u64>().expect("format not u4");
+    let message = CreateMessage::new().content("First message content");
+    let post = CreateForumPost::new("Forum Post Title", message);
+    let channel_id = ChannelId::new(channel_id); // Replace with your forum channel ID
+    channel_id.create_forum_post(&ctx.http(), post).await?;
     Ok(())
 }
 
@@ -49,6 +56,7 @@ impl EventHandler for Handler {
 async fn main() {
     dotenv().ok(); // Load environment variables from `.env`
     let token = std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN");
+    
 
     // Setup intents required for both poise and serenity
     let intents = serenity_pre::GatewayIntents::GUILD_MESSAGES
